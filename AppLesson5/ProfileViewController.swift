@@ -35,6 +35,9 @@ private enum UIConstants {
 
 class ProfileViewController: UIViewController {
     
+    private var cardBottomConstraint: NSLayoutConstraint!
+    private var isCardCollapsed = true
+    
     private let cardView: UIView = {
         let view = UIView()
         view.backgroundColor = .systemBackground
@@ -95,11 +98,15 @@ class ProfileViewController: UIViewController {
         cardView.addSubview(profileStackView)
         view.addSubview(cardView)
         
+        cardView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handlerCardTop)))
+        
         let nameLabelHeight = nameLabel.intrinsicContentSize.height
         let stackViewBottomPadding: CGFloat = 16
         let initialCardPosition = -(nameLabelHeight + stackViewBottomPadding + view.safeAreaInsets.bottom)
+        cardBottomConstraint = cardView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: initialCardPosition)
         
         NSLayoutConstraint.activate([
+            cardBottomConstraint,
             cardView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: initialCardPosition),
             cardView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: UIConstants.leadingInset),
             cardView.heightAnchor.constraint(equalToConstant: UIConstants.cardViewHeight),
@@ -113,7 +120,25 @@ class ProfileViewController: UIViewController {
             avatarImageView.heightAnchor.constraint(equalToConstant: UIConstants.avatarImageSize)
             
         ])
+    }
+    
+    @objc func handlerCardTop() {
+        isCardCollapsed.toggle()
         
+        UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.5, options: .curveEaseInOut) {
+            if self.isCardCollapsed {
+                let nameLabelHeight = self.nameLabel.intrinsicContentSize.height
+                let stackViewBottomPadding: CGFloat = 16
+                let targetPosition = -(nameLabelHeight + stackViewBottomPadding + self.view.safeAreaInsets.bottom)
+                self.cardBottomConstraint.constant = targetPosition
+            } else {
+                self.cardBottomConstraint.constant = -(self.view.frame.height - self.view.safeAreaInsets.top - UIConstants.cardViewHeight)
+            }
+            
+            self.boiLabel.alpha = self.isCardCollapsed ? 0 : 1
+            
+            self.view.layoutIfNeeded()
+        }
     }
 
 
