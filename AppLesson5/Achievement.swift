@@ -70,8 +70,8 @@ struct Achievement {
 
 extension Achievement {
     static func random() -> Achievement {
-        return Achievement(
-            title: faker.zelda.game(),
+        Achievement(
+            title: faker.lorem.sentences(amount: 1),
             description: faker.lorem.sentence(wordsAmount: .random(in: 15...40)),
             iconName: "xmark",
             color: UIColor(

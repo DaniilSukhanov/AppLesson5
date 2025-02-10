@@ -52,6 +52,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
         view.backgroundColor = .clear
         view.showsHorizontalScrollIndicator = false
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.contentInset.top = UIConstants.cardCornerRadius
         return view
     }()
     
@@ -123,8 +124,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
         let stackViewBottomPadding: CGFloat = 16
         let initialCardPosition = -(nameLabelHeight + stackViewBottomPadding + view.safeAreaInsets.bottom)
         cardBottomConstraint = cardView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: initialCardPosition)
-        collectionViewTopConstraint = collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: UIConstants.cardViewHeight)
-        
+        collectionViewTopConstraint = collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: UIConstants.cardViewHeight - UIConstants.cardCornerRadius)
         NSLayoutConstraint.activate([
             cardView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: initialCardPosition),
             cardView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: UIConstants.leadingInset),
