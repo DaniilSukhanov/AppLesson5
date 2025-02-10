@@ -17,9 +17,15 @@ private enum UIConstants {
     static let stackPadding: CGFloat = 8
     static let titleLabelFont: UIFont = .systemFont(ofSize: 14, weight: .semibold)
     static let titleLabelTextColor: UIColor = .black
+    static let coefficientWidthPadding: CGFloat = 0.1
+    static let coefficientHeightPadding: CGFloat = 0.05
+    static let coefficientScalePinch: CGFloat = 1.5
+    static let coefficientScaleClosePinch: CGFloat = 0.5
 }
 
 class AchievementCell: UICollectionViewCell {
+    private var achievement: Achievement?
+    
     private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -40,6 +46,8 @@ class AchievementCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(handlePinch)))
+        
     }
     
     required init?(coder: NSCoder) {
@@ -75,5 +83,65 @@ class AchievementCell: UICollectionViewCell {
         titleLabel.text = achievement.title
         imageView.image = UIImage(systemName: achievement.iconName)?.withRenderingMode(.alwaysTemplate)
         imageView.tintColor = achievement.color
+        self.achievement = achievement
+    }
+}
+
+private extension AchievementCell {
+    func showDetailView(for achievement: Achievement) {
+        guard let window else {
+            return
+        }
+        let invisibilityView = UIView()
+        invisibilityView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let detailView = AchievementDetailView()
+        detailView.layer.opacity = 0
+        detailView.translatesAutoresizingMaskIntoConstraints = false
+        
+        window.addSubview(invisibilityView)
+        invisibilityView.addSubview(detailView)
+        detailView.configure(with: achievement)
+        
+        let widthPadding = window.frame.width * UIConstants.coefficientWidthPadding
+        let heightPadding = window.frame.height * UIConstants.coefficientHeightPadding
+        NSLayoutConstraint.activate([
+            invisibilityView.leadingAnchor.constraint(equalTo: window.leadingAnchor),
+            invisibilityView.trailingAnchor.constraint(equalTo: window.trailingAnchor),
+            invisibilityView.topAnchor.constraint(equalTo: window.topAnchor),
+            invisibilityView.bottomAnchor.constraint(equalTo: window.bottomAnchor),
+            
+            detailView.leadingAnchor.constraint(equalTo: invisibilityView.leadingAnchor, constant: widthPadding),
+            detailView.trailingAnchor.constraint(equalTo: invisibilityView.trailingAnchor, constant: -widthPadding),
+            detailView.topAnchor.constraint(equalTo: invisibilityView.topAnchor, constant: heightPadding),
+            detailView.bottomAnchor.constraint(equalTo: invisibilityView.bottomAnchor, constant: -heightPadding)
+        ])
+        
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handleClosePinch))
+        invisibilityView.addGestureRecognizer(pinchGesture)
+        
+        UIView.animate(withDuration: 0.5) {
+            detailView.layer.opacity = 1
+        }
+    }
+    
+    @objc func handlePinch(_ gesture: UIPinchGestureRecognizer) {
+        guard let achievement else {
+            return
+        }
+        if gesture.state == .ended && gesture.scale > UIConstants.coefficientScalePinch {
+            showDetailView(for: achievement)
+        }
+    }
+    
+    @objc func handleClosePinch(_ gesture: UIPinchGestureRecognizer) {
+        if gesture.state == .ended && gesture.scale < UIConstants.coefficientScaleClosePinch {
+            UIView.animate(withDuration: 0.5) {
+                gesture.view?.layer.opacity = 0
+            } completion: { _ in
+                gesture.view?.removeFromSuperview()
+            }
+            
+        }
     }
 }

@@ -33,7 +33,7 @@ private enum UIConstants {
     static let cardViewHeight: CGFloat = 200
 }
 
-class ProfileViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+class ProfileViewController: UIViewController, UICollectionViewDataSource {
     
     private var cardBottomConstraint: NSLayoutConstraint!
     private var isCardCollapsed = true
@@ -42,7 +42,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
     private let achievements = Achievement.demoData
     
     private let collectionView: UICollectionView = {
-       let layout = UICollectionViewFlowLayout()
+        let layout = UICollectionViewFlowLayout()
         layout.itemSize = UIConstants.collectionItemSize
         layout.minimumInteritemSpacing = UIConstants.collectionMinimumInteritemSpacing
         layout.minimumLineSpacing = UIConstants.collectionMinimumLineSpacing
@@ -75,7 +75,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         return label
     }()
     
-    private let boiLabel: UILabel = {
+    private let bioLabel: UILabel = {
         let label = UILabel()
         label.text = UserInfo.bio
         label.font = .systemFont(ofSize: 14, weight: .regular)
@@ -106,7 +106,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
     }
     
     private func setupUI() {
-        let profileStackView: UIStackView = UIStackView(arrangedSubviews: [avatarImageView, nameLabel, boiLabel])
+        let profileStackView: UIStackView = UIStackView(arrangedSubviews: [avatarImageView, nameLabel, bioLabel])
         profileStackView.axis = .vertical
         profileStackView.spacing = UIConstants.profileStackSpacing
         profileStackView.alignment = .center
@@ -168,14 +168,17 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
             
             self.collectionView.transform = self.isCardCollapsed ? CGAffineTransform(translationX: 0, y: self.view.frame.height / 2) : .identity
             self.collectionView.alpha = self.isCardCollapsed ? 0 : 1
-            self.boiLabel.alpha = self.isCardCollapsed ? 0 : 1
+            self.bioLabel.alpha = self.isCardCollapsed ? 0 : 1
             
             self.view.layoutIfNeeded()
         } completion: { _ in
             self.collectionView.isUserInteractionEnabled = !self.isCardCollapsed
         }
     }
+    
+}
 
+extension ProfileViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return achievements.count
     }
@@ -183,8 +186,15 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AchievementCell", for: indexPath) as! AchievementCell
         cell.configure(with: achievements[indexPath.item])
+        
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let achievement = achievements[indexPath.item]
+        let alert = UIAlertController(title: achievement.title, message: achievement.description, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
     }
 
 }
-
