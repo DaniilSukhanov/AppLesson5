@@ -82,7 +82,7 @@ class AchievementCell: UICollectionViewCell {
     func configure(with achievement: Achievement) {
         titleLabel.text = achievement.title
         imageView.image = UIImage(systemName: achievement.iconName)?.withRenderingMode(.alwaysTemplate)
-        imageView.tintColor = achievement.color
+        imageView.tintColor = achievement.isFinished ? achievement.color : .gray
         self.achievement = achievement
     }
 }

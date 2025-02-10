@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import OSLog
 
 private enum UserInfo {
     static let name = "Федор Конюхов"
@@ -34,10 +35,10 @@ private enum UIConstants {
 }
 
 class ProfileViewController: UIViewController, UICollectionViewDataSource {
-    
-    private var cardBottomConstraint: NSLayoutConstraint!
+    private let logger = Logger(subsystem: "ProfileViewController", category: "UI")
+    private var cardBottomConstraint: NSLayoutConstraint?
     private var isCardCollapsed = true
-    private var collectionViewTopConstraint: NSLayoutConstraint!
+    private var collectionViewTopConstraint: NSLayoutConstraint?
     
     private let achievements = Achievement.demoData
     
@@ -125,7 +126,6 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
         collectionViewTopConstraint = collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: UIConstants.cardViewHeight)
         
         NSLayoutConstraint.activate([
-            cardBottomConstraint,
             cardView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: initialCardPosition),
             cardView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: UIConstants.leadingInset),
             cardView.heightAnchor.constraint(equalToConstant: UIConstants.cardViewHeight),
@@ -138,13 +138,21 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
             avatarImageView.widthAnchor.constraint(equalToConstant: UIConstants.avatarImageSize),
             avatarImageView.heightAnchor.constraint(equalToConstant: UIConstants.avatarImageSize),
             
-            collectionViewTopConstraint,
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
-        
         cardView.layer.zPosition = 1
+        
+        guard let cardBottomConstraint, let collectionViewTopConstraint else {
+            logger.warning("cardBottomConstraint & collectionViewTopConstraint is nil")
+            return
+        }
+        
+        NSLayoutConstraint.activate([
+            cardBottomConstraint,
+            collectionViewTopConstraint
+        ])
     }
     
     private func setupCollectionView() {
@@ -161,9 +169,9 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
                 let nameLabelHeight = self.nameLabel.intrinsicContentSize.height
                 let stackViewBottomPadding: CGFloat = 16
                 let targetPosition = -(nameLabelHeight + stackViewBottomPadding + self.view.safeAreaInsets.bottom)
-                self.cardBottomConstraint.constant = targetPosition
+                self.cardBottomConstraint?.constant = targetPosition
             } else {
-                self.cardBottomConstraint.constant = -(self.view.frame.height - self.view.safeAreaInsets.top - UIConstants.cardViewHeight)
+                self.cardBottomConstraint?.constant = -(self.view.frame.height - self.view.safeAreaInsets.top - UIConstants.cardViewHeight)
             }
             
             self.collectionView.transform = self.isCardCollapsed ? CGAffineTransform(translationX: 0, y: self.view.frame.height / 2) : .identity
@@ -184,7 +192,10 @@ extension ProfileViewController: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AchievementCell", for: indexPath) as! AchievementCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AchievementCell", for: indexPath) as? AchievementCell else {
+            logger.warning("cell not found")
+            return UICollectionViewCell()
+        }
         cell.configure(with: achievements[indexPath.item])
         
         return cell
