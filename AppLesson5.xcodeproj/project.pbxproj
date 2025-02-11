@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E42AE7352D53B91700141C7A /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = E42AE7342D53B91700141C7A /* .gitignore */; };
+		E4DA8D512D5AA502006A666B /* Fakery in Frameworks */ = {isa = PBXBuildFile; productRef = E4DA8D502D5AA502006A666B /* Fakery */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4DA8D512D5AA502006A666B /* Fakery in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +86,7 @@
 			);
 			name = AppLesson5;
 			packageProductDependencies = (
+				E4DA8D502D5AA502006A666B /* Fakery */,
 			);
 			productName = AppLesson5;
 			productReference = E42AE71C2D53B7CF00141C7A /* AppLesson5.app */;
@@ -113,6 +116,9 @@
 			);
 			mainGroup = E42AE7132D53B7CF00141C7A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E4DA8D4F2D5AA502006A666B /* XCRemoteSwiftPackageReference "Fakery" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E42AE71D2D53B7CF00141C7A /* Products */;
 			projectDirPath = "";
@@ -342,6 +348,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E4DA8D4F2D5AA502006A666B /* XCRemoteSwiftPackageReference "Fakery" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/vadymmarkov/Fakery";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E4DA8D502D5AA502006A666B /* Fakery */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E4DA8D4F2D5AA502006A666B /* XCRemoteSwiftPackageReference "Fakery" */;
+			productName = Fakery;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E42AE7142D53B7CF00141C7A /* Project object */;
 }
