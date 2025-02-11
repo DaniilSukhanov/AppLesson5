@@ -24,10 +24,17 @@ fileprivate enum UIConstants {
         static let verticalSpacingBase: CGFloat = 16
         static let verticalSpacingSmall: CGFloat = 8
         static let topMargin: CGFloat = 16
+        static let progressBarHeight: CGFloat = 8
     }
     
     enum ImageViewSize {
         static let icon: CGFloat = 80
+    }
+    
+    enum Other {
+        static let progressBarMinValue = 0.0
+        static let progressBarMaxValue = 100.0
+        static let progressBarDefaultValue = 0.0
     }
 }
 
@@ -57,6 +64,12 @@ final class AchievementDetailView: UIView {
         return label
     }()
     
+    private let progressBar = ProgressBar(
+        minValue: UIConstants.Other.progressBarMinValue,
+        maxValue: UIConstants.Other.progressBarMaxValue,
+        currentValue: UIConstants.Other.progressBarDefaultValue
+    )
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -67,6 +80,7 @@ final class AchievementDetailView: UIView {
     }
     
     private func setupUI() {
+        progressBar.translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = .systemBackground
         layer.cornerRadius = UIConstants.CornerRadius.base
         layer.shadowColor = UIConstants.Shadow.color
@@ -77,6 +91,7 @@ final class AchievementDetailView: UIView {
         addSubview(iconImageView)
         addSubview(titleLabel)
         addSubview(descriptionLabel)
+        addSubview(progressBar)
         
         NSLayoutConstraint.activate([
             iconImageView.topAnchor.constraint(
@@ -115,6 +130,24 @@ final class AchievementDetailView: UIView {
             descriptionLabel.trailingAnchor.constraint(
                 equalTo: trailingAnchor,
                 constant: -UIConstants.Layout.horizontalMargin
+            ),
+            
+            progressBar.topAnchor.constraint(
+                equalTo: descriptionLabel.bottomAnchor,
+                constant: UIConstants.Layout.verticalSpacingBase
+            ),
+            progressBar.leadingAnchor.constraint(
+                equalTo: leadingAnchor,
+                constant: UIConstants.Layout.horizontalMargin
+            ),
+            progressBar.trailingAnchor.constraint(
+                equalTo: trailingAnchor,
+                constant: -UIConstants.Layout.horizontalMargin
+            ),
+            progressBar.heightAnchor.constraint(equalToConstant: UIConstants.Layout.progressBarHeight),
+            progressBar.bottomAnchor.constraint(
+                equalTo: bottomAnchor,
+                constant: -UIConstants.Layout.topMargin
             )
         ])
     }
@@ -123,5 +156,6 @@ final class AchievementDetailView: UIView {
         iconImageView.image = UIImage(systemName: achievement.iconName)
         titleLabel.text = achievement.title
         descriptionLabel.text = achievement.description
+        progressBar.currentValue = CGFloat(achievement.progressBar)
     }
 }

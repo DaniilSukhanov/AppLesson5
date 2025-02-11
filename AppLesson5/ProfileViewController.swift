@@ -53,6 +53,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
         view.showsHorizontalScrollIndicator = false
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentInset.top = UIConstants.cardCornerRadius
+        view.showsVerticalScrollIndicator = false
         return view
     }()
     
